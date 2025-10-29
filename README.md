@@ -6,7 +6,7 @@ Automatically detects inconsistencies across English, German, and Latvian legal 
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Install dependencies
@@ -27,21 +27,23 @@ open output/differences.xlsx
 
 ---
 
-## ✨ Features
+## Features
 
-- ✅ **Monetary Values**: Detects amount, currency, and scale mismatches
-- ✅ **Legal References**: Validates regulations, articles, and case numbers
-- ✅ **Dates**: Finds date discrepancies and vague vs specific values
-- ✅ **Missing Content**: Identifies paragraphs present in some languages but not others
-- ✅ **Two Alignment Modes**: Rule-based (fast) and semantic (accurate)
-- ✅ **Watson AI Support**: Uses IBM Granite multilingual embeddings
+- **Monetary Values**: Detects amount, currency, and scale mismatches
+- **Legal References**: Validates regulations, articles, and case numbers
+- **Dates**: Finds date discrepancies and vague vs specific values
+- **Missing Content**: Identifies paragraphs present in some languages but not others
+- **Two Alignment Modes**: Rule-based (fast) and semantic (accurate)
+- **Watson AI Support**: Uses IBM Granite multilingual embeddings
 
 ---
 
-## 📊 Results
+## Results
 
 **Test Dataset**: 70 paragraphs × 3 languages
+
 **Differences Found**: 173
+
 **Error Types**:
 - Missing values (entity in one language but not others)
 - Monetary value discrepancies
@@ -54,7 +56,7 @@ See `output/differences.xlsx` for detailed report.
 
 ---
 
-## 🎯 Usage
+## Usage
 
 ### Command Line Options
 
@@ -85,7 +87,7 @@ python3 main.py --semantic --watson
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 team-ibm-project/
@@ -106,9 +108,11 @@ team-ibm-project/
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
-### Watson AI Setup (Optional, for best quality)
+### Watson AI Setup (Optional)
+
+For best quality results, configure Watson AI credentials:
 
 ```bash
 # Set environment variables
@@ -117,7 +121,7 @@ export WATSON_PROJECT_ID="your-project-id"
 export WATSON_URL="https://us-south.ml.cloud.ibm.com"
 
 # Test credentials
-python3 -c "from config import validate_watson_credentials; print('✓ Valid' if validate_watson_credentials() else '✗ Invalid')"
+python3 -c "from config import validate_watson_credentials; print('Valid' if validate_watson_credentials() else 'Invalid')"
 
 # Run with Watson
 python3 main.py --semantic --watson
@@ -136,7 +140,7 @@ NUMERICAL_TOLERANCE = 0.01   # For monetary values
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run comprehensive test suite
@@ -155,7 +159,7 @@ rm -rf .cache/*
 
 ---
 
-## 📈 Performance
+## Performance
 
 | Mode | First Run | Cached Run | Accuracy |
 |------|-----------|------------|----------|
@@ -167,7 +171,7 @@ rm -rf .cache/*
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Import Errors
 ```bash
@@ -191,18 +195,18 @@ python3 -c "import json; data=json.load(open('output/differences.json')); print(
 
 ---
 
-## 📚 Technical Details
+## Technical Details
 
 For architecture, implementation details, and optimization work, see:
 - **`TECHNICAL_DETAILS.md`** - Complete technical documentation
 
 ---
 
-## 🤝 Team
+## Team
 
 - Karla Lucic
 - Claude AI (Anthropic)
 
-**Status**: ✅ Production Ready (23/23 critical issues resolved)
+**Status**: Production Ready (23/23 critical issues resolved)
 
 **License**: MIT

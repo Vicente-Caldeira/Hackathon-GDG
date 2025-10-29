@@ -20,38 +20,38 @@ Complete technical documentation for the Document Consistency Checker.
 ### System Overview
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚                         main.py                              â”‚
-â”‚                    (CLI Entry Point)                         â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                 â”‚
-    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-    â”‚            â”‚            â”‚
-    â–¼            â–¼            â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ Loader â”‚  â”‚ Aligner â”‚  â”‚ Validator  â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                 â”‚
-         â”Œâ”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”
-         â”‚               â”‚
-         â–¼               â–¼
-    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-    â”‚ Simple â”‚    â”‚ Semantic â”‚
-    â”‚ Align  â”‚    â”‚  Align   â”‚
-    â””â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                       â”‚
-                       â–¼
-                 â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-                 â”‚Embeddingsâ”‚
-                 â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                       â”‚
-              â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”
-              â”‚                 â”‚
-              â–¼                 â–¼
-         â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”      â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-         â”‚ Watson â”‚      â”‚  Local  â”‚
-         â”‚   AI   â”‚      â”‚  Model  â”‚
-         â””â”€â”€â”€â”€â”€â”€â”€â”€â”˜      â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+‚                         main.py                              ‚
+‚                    (CLI Entry Point)                         ‚
+€€€€€€€€€€€€€€€€¬€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€˜
+                 ‚
+    €€€€€€€€€€€€¼€€€€€€€€€€€€
+    ‚            ‚            ‚
+    –¼            –¼            –¼
+€€€€€€€€  €€€€€€€€€  €€€€€€€€€€€€
+‚ Loader ‚  ‚ Aligner ‚  ‚ Validator  ‚
+€€€€€€€€˜  €€€€€€€€€˜  €€€€€€€€€€€€˜
+                 ‚
+         €€€€€€€´€€€€€€€
+         ‚               ‚
+         –¼               –¼
+    €€€€€€€€    €€€€€€€€€€
+    ‚ Simple ‚    ‚ Semantic ‚
+    ‚ Align  ‚    ‚  Align   ‚
+    €€€€€€€€˜    €€€€€€€€€€˜
+                       ‚
+                       –¼
+                 €€€€€€€€€€
+                 ‚Embeddings‚
+                 €€€€€€€€€€˜
+                       ‚
+              €€€€€€€€´€€€€€€€€
+              ‚                 ‚
+              –¼                 –¼
+         €€€€€€€€      €€€€€€€€€
+         ‚ Watson ‚      ‚  Local  ‚
+         ‚   AI   ‚      ‚  Model  ‚
+         €€€€€€€€˜      €€€€€€€€€˜
 ```
 
 ### Key Components
@@ -104,41 +104,41 @@ Complete technical documentation for the Document Consistency Checker.
 ## All Fixes Applied
 
 ### Security & Configuration (3)
-1. âœ… **Hardcoded Credentials** - Removed from `config.py`, use environment variables
-2. âœ… **Credential Validation** - Added `validate_watson_credentials()`
-3. âœ… **Test Script Leak** - Fixed `test_watson_embeddings.py` to require valid credentials
+1.  **Hardcoded Credentials** - Removed from `config.py`, use environment variables
+2.  **Credential Validation** - Added `validate_watson_credentials()`
+3.  **Test Script Leak** - Fixed `test_watson_embeddings.py` to require valid credentials
 
 ### Alignment System (6)
-4. âœ… **Wrong Model** - `embeddings.py` now uses `WATSON_EMBEDDING_MODEL` from config
-5. âœ… **Index Mismatch** - `paragraph_aligner.py` tracks filteredâ†’original indices with mappings
-6. âœ… **SimpleAligner Truncation** - Uses `max_len`, detects missing paragraphs
-7. âœ… **Greedy Alignment** - Replaced sequential matching with global Hungarian algorithm
-8. âœ… **Unmatched Paragraphs** - Added post-pass to emit DE/LV-only content
-9. âœ… **Empty Embeddings** - Added safety checks for empty/fully-excluded arrays
+4.  **Wrong Model** - `embeddings.py` now uses `WATSON_EMBEDDING_MODEL` from config
+5.  **Index Mismatch** - `paragraph_aligner.py` tracks filteredoriginal indices with mappings
+6.  **SimpleAligner Truncation** - Uses `max_len`, detects missing paragraphs
+7.  **Greedy Alignment** - Replaced sequential matching with global Hungarian algorithm
+8.  **Unmatched Paragraphs** - Added post-pass to emit DE/LV-only content
+9.  **Empty Embeddings** - Added safety checks for empty/fully-excluded arrays
 
 ### Entity Matching (4)
-10. âœ… **Positional Matching** - Implemented Hungarian algorithm for value-driven matching
-11. âœ… **Partial Matches** - EN-DE pairs marked as matched even without LV
-12. âœ… **Multilingual Regex** - Added German ("Artikel", "Absatz") and Latvian ("pants", "rindkopa")
-13. âœ… **Cross-Language Comparison** - Added DE-LV comparison when EN missing
+10.  **Positional Matching** - Implemented Hungarian algorithm for value-driven matching
+11.  **Partial Matches** - EN-DE pairs marked as matched even without LV
+12.  **Multilingual Regex** - Added German ("Artikel", "Absatz") and Latvian ("pants", "rindkopa")
+13.  **Cross-Language Comparison** - Added DE-LV comparison when EN missing
 
 ### Caching System (4)
-14. âœ… **Cache Versioning** - Metadata includes model ID and embedding dimensions
-15. âœ… **Cache Type Bug** - Index mappings stored in separate `.json` files
-16. âœ… **Content-Based Keys** - Cache keys derived from `get_cache_key(documents)`
-17. âœ… **Collision Prevention** - Ordered `(lang, index, text)` tuples in cache hash
+14.  **Cache Versioning** - Metadata includes model ID and embedding dimensions
+15.  **Cache Type Bug** - Index mappings stored in separate `.json` files
+16.  **Content-Based Keys** - Cache keys derived from `get_cache_key(documents)`
+17.  **Collision Prevention** - Ordered `(lang, index, text)` tuples in cache hash
 
 ### Thresholds & Tuning (2)
-18. âœ… **Similarity Threshold** - Lowered from 0.85 to 0.75 (based on 0.83 benchmark)
-19. âœ… **Matching Threshold** - Raised to 0.9 for currency/scale error detection
+18.  **Similarity Threshold** - Lowered from 0.85 to 0.75 (based on 0.83 benchmark)
+19.  **Matching Threshold** - Raised to 0.9 for currency/scale error detection
 
 ### User Interface (2)
-20. âœ… **CLI Flags** - Added `--semantic`, `--watson`, `--local`
-21. âœ… **Import Error** - Added `Tuple, Any` to `embeddings.py` typing imports
+20.  **CLI Flags** - Added `--semantic`, `--watson`, `--local`
+21.  **Import Error** - Added `Tuple, Any` to `embeddings.py` typing imports
 
 ### Testing & Dependencies (2)
-22. âœ… **Smoke Test** - Created `tests/test_imports.py` to catch import errors
-23. âœ… **Dependencies** - Removed `python-docx`, `pandas`; added `scipy`
+22.  **Smoke Test** - Created `tests/test_imports.py` to catch import errors
+23.  **Dependencies** - Removed `python-docx`, `pandas`; added `scipy`
 
 ---
 
@@ -219,7 +219,7 @@ time python3 main.py --semantic --local --format json
 
 ```bash
 # Validate JSON
-python3 -c "import json; json.load(open('output/differences.json')); print('âœ“ Valid JSON')"
+python3 -c "import json; json.load(open('output/differences.json')); print(' Valid JSON')"
 
 # Count differences by type
 python3 -c "
@@ -246,14 +246,14 @@ ls -lh output/differences.xlsx
 
 1. **Sign up**: https://cloud.ibm.com/
 2. **Create watsonx.ai instance**:
-   - Go to Catalog â†’ AI/Machine Learning â†’ watsonx.ai
+   - Go to Catalog  AI/Machine Learning  watsonx.ai
    - Select region (e.g., Dallas, Frankfurt)
    - Create service
 3. **Get API Key**:
-   - Go to Manage â†’ Access (IAM)
-   - API Keys â†’ Create
+   - Go to Manage  Access (IAM)
+   - API Keys  Create
 4. **Get Project ID**:
-   - Open watsonx.ai â†’ Projects
+   - Open watsonx.ai  Projects
    - Create new project or use existing
    - Copy Project ID from Settings
 
@@ -284,9 +284,9 @@ EOF
 python3 -c "
 from config import validate_watson_credentials
 if validate_watson_credentials():
-    print('âœ“ Credentials valid')
+    print(' Credentials valid')
 else:
-    print('âœ— Credentials missing or invalid')
+    print('— Credentials missing or invalid')
 "
 ```
 
@@ -304,7 +304,7 @@ python3 main.py --semantic --watson --format json
 
 | Model | Dimensions | Cross-Lingual Similarity | Best For |
 |-------|------------|-------------------------|----------|
-| **granite-embedding-107m-multilingual** | 384 | **0.83** | Multilingual (EN/DE/LV) âœ… |
+| **granite-embedding-107m-multilingual** | 384 | **0.83** | Multilingual (EN/DE/LV)  |
 | slate-125m-english-rtrvr | 768 | 0.62 | English-only |
 | slate-30m-english-rtrvr | 384 | 0.69 | Fast English |
 | Local MiniLM-L6-v2 | 384 | 0.28 | Offline/development |
@@ -393,7 +393,7 @@ When one language is missing (e.g., EN missing but DE/LV present):
    - Finds optimal alignment across all paragraphs
 
 3. **Structured Index Mappings**:
-   - Tracks filteredâ†’original paragraph indices
+   - Tracks filteredoriginal paragraph indices
    - Prevents off-by-one errors with blank paragraphs
    - Stored separately from embeddings
 
@@ -459,17 +459,17 @@ ERROR_TYPES = {
 
 ```
 .cache/                              # Embedding cache (auto-created)
-  â”œâ”€â”€ <model_id>_<hash>_embeddings.npz  # Cached embeddings
-  â””â”€â”€ <model_id>_<hash>_mappings.json   # Index mappings
+  €€ <model_id>_<hash>_embeddings.npz  # Cached embeddings
+  €€ <model_id>_<hash>_mappings.json   # Index mappings
 
 output/                              # Generated reports (auto-created)
-  â”œâ”€â”€ differences.json               # Structured output
-  â””â”€â”€ differences.xlsx               # Human-readable report
+  €€ differences.json               # Structured output
+  €€ differences.xlsx               # Human-readable report
 
 data/                                # Input documents
-  â”œâ”€â”€ test_sample_en_parsed.json
-  â”œâ”€â”€ test_sample_de_parsed.json
-  â””â”€â”€ test_sample_lv_parsed.json
+  €€ test_sample_en_parsed.json
+  €€ test_sample_de_parsed.json
+  €€ test_sample_lv_parsed.json
 ```
 
 ---
@@ -532,4 +532,4 @@ print(types)
 
 **Document Version**: 1.0
 **Last Updated**: 2025-10-29
-**Status**: âœ… Complete & Production Ready
+**Status**:  Complete & Production Ready
