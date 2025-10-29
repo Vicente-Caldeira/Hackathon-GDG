@@ -205,7 +205,9 @@ For architecture, implementation details, and optimization work, see:
 ## Team
 
 - Karla Lucic
-- Claude AI (Anthropic)
+- Ante Kuvacic
+- Eren Can
+- Vicente Caldeira
 
 **Status**: Production Ready (23/23 critical issues resolved)
 
