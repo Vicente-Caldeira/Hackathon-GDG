@@ -6,7 +6,7 @@
       "test_sample_lv"
     ],
     "total_differences": 50,
-    "timestamp": "2025-10-29T12:27:05.570996",
+    "timestamp": "2025-10-29T12:38:22.033806",
     "version": "1.0"
   },
   "differences": [
@@ -75,7 +75,7 @@
         "de": "1.5 USD",
         "lv": "135.0 EUR"
       },
-      "description": "Currency mismatch: {'USD', 'EUR'}",
+      "description": "Currency mismatch: {'EUR', 'USD'}",
       "confidence": 1.0
     },
     {
@@ -92,7 +92,7 @@
         "de": "1.5 billion",
         "lv": "135.0 million"
       },
-      "description": "Scale mismatch: {'million', 'billion'}",
+      "description": "Scale mismatch: {'billion', 'million'}",
       "confidence": 1.0
     },
     {

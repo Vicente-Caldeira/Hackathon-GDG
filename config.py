@@ -21,12 +21,20 @@ INPUT_FILES = {
 GROUND_TRUTH_FILE = DATA_DIR / "errors_test_file.xlsx"
 
 # Watson AI configuration (set via environment variables)
-WATSON_API_KEY = os.getenv("WATSON_API_KEY", "")
+WATSON_API_KEY = os.getenv("WATSON_API_KEY", "ApiKey-aaa31127-dba6-4c68-851f-84ee03d2e1e5")
 WATSON_URL = os.getenv("WATSON_URL", "https://us-south.ml.cloud.ibm.com")
-WATSON_PROJECT_ID = os.getenv("WATSON_PROJECT_ID", "")
+WATSON_PROJECT_ID = os.getenv("WATSON_PROJECT_ID", "d9206445-c488-4f02-9441-aee55859d443")
 
-# Embedding model
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"  # Fallback to local if Watson not available
+# Embedding models
+# BEST for multilingual (EN, DE, LV): IBM Granite Multilingual
+WATSON_EMBEDDING_MODEL = "ibm/granite-embedding-107m-multilingual"
+
+# Alternative Watson models:
+# - "ibm/slate-125m-english-rtrvr" (best for English-only, 768 dims)
+# - "ibm/slate-30m-english-rtrvr" (faster, smaller, 384 dims)
+
+# Fallback local model (if Watson not available)
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 # Detection thresholds
 SIMILARITY_THRESHOLD = 0.85  # For paragraph alignment

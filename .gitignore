@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Cache
+.cache/
+*.npz
+
+# Secrets (if you add real API keys to config)
+# config.py  # Uncomment this if you add real keys
+
+# Output
+output/*.json
+output/*.xlsx
+
+# OS
+.DS_Store

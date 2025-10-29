@@ -21,7 +21,7 @@ def main(output_format: str = "both"):
         output_format: Output format ('json', 'excel', or 'both')
     """
     print("=" * 70)
-    print("  Document Consistency Checker - IBM Hackathon")
+    print("Document Consistency Checker")
     print("=" * 70)
 
     # Step 1: Load documents
