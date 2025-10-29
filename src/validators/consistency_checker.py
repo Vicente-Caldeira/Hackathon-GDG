@@ -9,7 +9,11 @@ from scipy.optimize import linear_sum_assignment
 
 from src.alignment.paragraph_aligner import AlignedParagraphs
 from src.extractors.entity_extractor import EntityExtractor, MonetaryValue, LegalReference, DateValue
-from config import ERROR_TYPES, NUMERICAL_TOLERANCE
+from config import (
+    ERROR_TYPES, NUMERICAL_TOLERANCE,
+    WATSON_API_KEY, WATSON_URL, WATSON_PROJECT_ID,
+    validate_watson_credentials
+)
 
 
 @dataclass
@@ -30,8 +34,152 @@ class Difference:
 class ConsistencyChecker:
     """Check for inconsistencies across aligned paragraphs."""
 
-    def __init__(self):
+    def __init__(self, use_watson_validation: bool = False):
+        """
+        Initialize consistency checker.
+
+        Args:
+            use_watson_validation: If True, use Watson AI to validate high-severity errors
+        """
         self.extractor = EntityExtractor()
+        self.use_watson_validation = use_watson_validation
+        self.watson_client = None
+
+        if use_watson_validation:
+            self._init_watson_client()
+
+    def _init_watson_client(self):
+        """Initialize Watson AI text generation client."""
+        try:
+            if not validate_watson_credentials():
+                print("⚠️  Watson AI credentials not configured - validation disabled")
+                self.use_watson_validation = False
+                return
+
+            from ibm_watsonx_ai import Credentials
+            from ibm_watsonx_ai.foundation_models import ModelInference
+
+            credentials = Credentials(
+                url=WATSON_URL,
+                api_key=WATSON_API_KEY
+            )
+
+            # Use a capable LLM for validation
+            # Trying Granite 3.2 8B instruct - good for structured validation tasks
+            self.watson_client = ModelInference(
+                model_id="ibm/granite-3-2-8b-instruct",  # Supported and capable
+                credentials=credentials,
+                project_id=WATSON_PROJECT_ID,
+                params={
+                    "max_new_tokens": 300,
+                    "temperature": 0.1,  # Low temperature for consistent validation
+                    "top_p": 0.9,
+                    "decoding_method": "greedy",
+                }
+            )
+            print("✓ Watson AI validation enabled")
+        except Exception as e:
+            print(f"⚠️  Watson AI initialization failed: {e}")
+            print("→ Continuing without AI validation")
+            self.use_watson_validation = False
+
+    def _validate_with_watson(
+        self,
+        aligned: AlignedParagraphs,
+        detected_error: Difference
+    ) -> Optional[Dict]:
+        """
+        Use Watson AI to validate if detected error is real.
+
+        Args:
+            aligned: The aligned paragraphs
+            detected_error: The detected inconsistency
+
+        Returns:
+            Dict with validation results or None if validation fails
+        """
+        if not self.watson_client:
+            return None
+
+        try:
+            # Get paragraph texts
+            en_text = aligned.en.text if aligned.en else "[MISSING]"
+            de_text = aligned.de.text if aligned.de else "[MISSING]"
+            lv_text = aligned.lv.text if aligned.lv else "[MISSING]"
+
+            # Build validation prompt
+            prompt = f"""You are validating factual consistency in multilingual legal documents (English, German, Latvian).
+
+**IMPORTANT:** The same content is expressed in different languages. Translation variants are NOT errors.
+- "Article 212" (EN) = "Artikel 212" (DE) = "212. pants/pantu/panta" (LV) → SAME, not an error
+- "Regulation (EU) 2021/947" (EN) = "Verordnung (EU) 2021/947" (DE) = "Regula (ES) 2021/947" (LV) → SAME
+- Numbers/dates must match EXACTLY across languages
+
+**Paragraph Content:**
+English: {en_text[:400]}
+German: {de_text[:400]}
+Latvian: {lv_text[:400]}
+
+**Detected Issue:**
+Type: {detected_error.error_type}
+EN value: {detected_error.values.get('en', 'N/A')}
+DE value: {detected_error.values.get('de', 'N/A')}
+LV value: {detected_error.values.get('lv', 'N/A')}
+
+**Question:** Is this a REAL factual error (different numbers, dates, or references)?
+Or just a translation variant (same meaning, different words)?
+
+**Response Format (must follow exactly):**
+VALID: YES
+EXPLANATION: [Brief explanation why it's an error]
+SEVERITY: CRITICAL
+
+OR
+
+VALID: NO
+EXPLANATION: Translation variant - same content in different language
+SEVERITY: LOW"""
+
+            # Call Watson - SDK returns a dict, not a string
+            response = self.watson_client.generate_text(prompt=prompt)
+
+            # Extract generated text from Watson response structure
+            if isinstance(response, dict):
+                # Watson SDK returns: {"results": [{"generated_text": "..."}]}
+                generated_text = response.get("results", [{}])[0].get("generated_text", "")
+            elif isinstance(response, str):
+                # Fallback if SDK changes or returns string directly
+                generated_text = response
+            else:
+                # Unknown format - bail
+                return None
+
+            # Parse response
+            lines = generated_text.strip().split('\n')
+            result = {}
+
+            for line in lines:
+                if line.startswith('VALID:'):
+                    result['is_real_error'] = 'YES' in line.upper()
+                elif line.startswith('EXPLANATION:'):
+                    result['ai_explanation'] = line.split('EXPLANATION:', 1)[1].strip()
+                elif line.startswith('SEVERITY:'):
+                    severity = line.split('SEVERITY:', 1)[1].strip().upper()
+                    result['ai_severity'] = severity if severity in ['CRITICAL', 'MEDIUM', 'LOW'] else 'MEDIUM'
+
+            # Ensure all fields are present
+            if 'is_real_error' not in result:
+                result['is_real_error'] = True  # Default to keeping error if parsing fails
+            if 'ai_explanation' not in result:
+                result['ai_explanation'] = detected_error.description
+            if 'ai_severity' not in result:
+                result['ai_severity'] = detected_error.severity
+
+            return result
+
+        except Exception as e:
+            print(f"⚠️  Watson validation failed for error {detected_error.paragraph_ids}: {e}")
+            return None
 
     def check_all(self, aligned_paragraphs: List[AlignedParagraphs]) -> List[Difference]:
         """
@@ -87,7 +235,29 @@ class ConsistencyChecker:
             differences.extend(self._check_legal_references(aligned, entities))
             differences.extend(self._check_dates(aligned, entities))
 
-            all_differences.extend(differences)
+            # Validate ALL errors with Watson AI (including MISSING_VALUE which are often false positives)
+            if self.use_watson_validation:
+                validated_differences = []
+                for diff in differences:
+                    # Validate all error types - Watson will filter false positives
+                    watson_result = self._validate_with_watson(aligned, diff)
+
+                    if watson_result and watson_result['is_real_error']:
+                        # Update with AI explanation and severity
+                        diff.description = watson_result['ai_explanation']
+                        diff.severity = watson_result['ai_severity']
+                        validated_differences.append(diff)
+                    elif watson_result and not watson_result['is_real_error']:
+                        # Watson says it's a false positive - skip it
+                        print(f"  ℹ️  Watson filtered false positive in para {diff.paragraph_ids}: {diff.error_type}")
+                    else:
+                        # Watson validation failed - keep error with original description
+                        print(f"  ⚠️  Watson validation failed for para {diff.paragraph_ids} - keeping error")
+                        validated_differences.append(diff)
+
+                all_differences.extend(validated_differences)
+            else:
+                all_differences.extend(differences)
 
         return all_differences
 
@@ -130,22 +300,78 @@ class ConsistencyChecker:
 
         # Check matched triplets for differences
         for en_val, de_val, lv_val in matched_triplets:
-            # If LV is missing, report it specifically
-            if lv_val is None:
-                differences.append(Difference(
-                    paragraph_ids=aligned.get_paragraph_ids(),
-                    error_type="MISSING_VALUE",
-                    severity=ERROR_TYPES["MISSING_VALUE"],
-                    values={
-                        'en': en_val.original_text,
-                        'de': de_val.original_text,
-                        'lv': "MISSING"
-                    },
-                    description="Monetary value present in EN/DE but missing in LV",
-                    confidence=0.95
-                ))
+            # Handle None values (from DE-LV fallback matching)
+            if en_val is None:
+                # DE-LV pair matched, EN missing - only report if DE/LV mismatch
+                if de_val and lv_val:
+                    # Check if DE and LV match
+                    de_full = de_val.amount * self._scale_multiplier(de_val.scale)
+                    lv_full = lv_val.amount * self._scale_multiplier(lv_val.scale)
+
+                    if de_val.currency != lv_val.currency or abs(de_full - lv_full) >= NUMERICAL_TOLERANCE:
+                        differences.append(Difference(
+                            paragraph_ids=aligned.get_paragraph_ids(),
+                            error_type="MONETARY_VALUE",
+                            severity=ERROR_TYPES["MONETARY_VALUE"],
+                            values={
+                                'en': "MISSING",
+                                'de': de_val.original_text,
+                                'lv': lv_val.original_text
+                            },
+                            description=f"Monetary mismatch in DE/LV (EN not available)",
+                            confidence=0.95
+                        ))
                 continue
 
+            # If LV is missing, check EN/DE consistency
+            if lv_val is None:
+                if en_val and de_val:
+                    # Only report if EN/DE mismatch
+                    en_full = en_val.amount * self._scale_multiplier(en_val.scale)
+                    de_full = de_val.amount * self._scale_multiplier(de_val.scale)
+
+                    if en_val.currency != de_val.currency or abs(en_full - de_full) >= NUMERICAL_TOLERANCE:
+                        differences.append(Difference(
+                            paragraph_ids=aligned.get_paragraph_ids(),
+                            error_type="MONETARY_VALUE",
+                            severity=ERROR_TYPES["MONETARY_VALUE"],
+                            values={
+                                'en': en_val.original_text,
+                                'de': de_val.original_text,
+                                'lv': "MISSING"
+                            },
+                            description=f"Monetary mismatch in EN/DE (LV not available)",
+                            confidence=0.95
+                        ))
+                    else:
+                        differences.append(Difference(
+                            paragraph_ids=aligned.get_paragraph_ids(),
+                            error_type="MISSING_VALUE",
+                            severity=ERROR_TYPES["MISSING_VALUE"],
+                            values={
+                                'en': en_val.original_text,
+                                'de': de_val.original_text,
+                                'lv': "MISSING"
+                            },
+                            description="Monetary value missing in LV while EN and DE match",
+                            confidence=0.9
+                        ))
+                else:
+                    differences.append(Difference(
+                        paragraph_ids=aligned.get_paragraph_ids(),
+                        error_type="MISSING_VALUE",
+                        severity=ERROR_TYPES["MISSING_VALUE"],
+                        values={
+                            'en': en_val.original_text if en_val else "MISSING",
+                            'de': de_val.original_text if de_val else "MISSING",
+                            'lv': "MISSING"
+                        },
+                        description="Monetary value missing in LV (no matching amount detected)",
+                        confidence=0.8
+                    ))
+                continue
+
+            # All three present - check for mismatches
             # Check for currency mismatches
             currencies = {en_val.currency, de_val.currency, lv_val.currency}
             if len(currencies) > 1:
@@ -245,7 +471,7 @@ class ConsistencyChecker:
             en_indices, de_indices = linear_sum_assignment(cost_matrix)
             # Accept matches even with currency/scale issues (threshold 0.9) so we can report specific errors
             en_de_matches = {en_i: de_i for en_i, de_i in zip(en_indices, de_indices)
-                           if cost_matrix[en_i, de_i] < 0.9}
+                           if cost_matrix[en_i, de_i] <= 0.9}
         else:
             en_de_matches = {}
 
@@ -263,7 +489,7 @@ class ConsistencyChecker:
                     if lv_i in matched_lv:
                         continue
                     dist = self._monetary_distance(en_vals[en_i], lv_val)
-                    if dist < best_dist and dist < 0.9:  # Accept currency/scale issues
+                    if dist < best_dist and dist <= 0.9:  # Accept currency/scale issues
                         best_dist = dist
                         best_lv_i = lv_i
 
@@ -277,7 +503,30 @@ class ConsistencyChecker:
                 # No LV values at all - add EN-DE pair with None for LV
                 triplets.append((en_vals[en_i], de_vals[de_i], None))
 
-        # Collect unmatched
+        # FALLBACK: Match remaining DE-LV pairs (when EN is missing/weak)
+        unmatched_de = [i for i, v in enumerate(de_vals) if i not in matched_de]
+        unmatched_lv = [i for i, v in enumerate(lv_vals) if i not in matched_lv]
+
+        if unmatched_de and unmatched_lv:
+            # Build cost matrix for unmatched DE-LV pairs
+            cost_matrix = np.zeros((len(unmatched_de), len(unmatched_lv)))
+            for i, de_i in enumerate(unmatched_de):
+                for j, lv_i in enumerate(unmatched_lv):
+                    cost_matrix[i, j] = self._monetary_distance(de_vals[de_i], lv_vals[lv_i])
+
+            # Hungarian algorithm
+            de_indices, lv_indices = linear_sum_assignment(cost_matrix)
+
+            for i, j in zip(de_indices, lv_indices):
+                if cost_matrix[i, j] <= 0.9:  # Threshold for match
+                    de_idx = unmatched_de[i]
+                    lv_idx = unmatched_lv[j]
+                    # Add as triplet with None for EN
+                    triplets.append((None, de_vals[de_idx], lv_vals[lv_idx]))
+                    matched_de.add(de_idx)
+                    matched_lv.add(lv_idx)
+
+        # Collect final unmatched
         unmatched = {
             'en': [v for i, v in enumerate(en_vals) if i not in matched_en],
             'de': [v for i, v in enumerate(de_vals) if i not in matched_de],
@@ -338,6 +587,12 @@ class ConsistencyChecker:
 
         # Check matched triplets
         for en_ref, de_ref, lv_ref in matched_triplets:
+            # If LV is missing but EN/DE match, no error to report
+            if lv_ref is None:
+                # EN and DE matched, LV doesn't have this reference
+                # This is OK - just means LV is missing, not a mismatch
+                continue
+
             # Normalize and compare references
             refs_normalized = {
                 self._normalize_legal_ref(en_ref.reference),
@@ -404,8 +659,12 @@ class ConsistencyChecker:
         else:
             en_de_matches = {}
 
-        # Match LV to each EN-DE pair
+        # Match LV to each EN-DE pair (or add EN-DE pair even without LV)
         for en_i, de_i in en_de_matches.items():
+            # Mark EN-DE as matched regardless of LV
+            matched_en.add(en_i)
+            matched_de.add(de_i)
+
             if lv_vals:
                 best_lv_i = None
                 best_dist = float('inf')
@@ -419,9 +678,14 @@ class ConsistencyChecker:
 
                 if best_lv_i is not None:
                     triplets.append((en_vals[en_i], de_vals[de_i], lv_vals[best_lv_i]))
-                    matched_en.add(en_i)
-                    matched_de.add(de_i)
                     matched_lv.add(best_lv_i)
+                else:
+                    # EN-DE match but no LV - still add to triplets with None for LV
+                    # This prevents false "MISSING_VALUE" errors
+                    triplets.append((en_vals[en_i], de_vals[de_i], None))
+            else:
+                # No LV values at all - add EN-DE pair with None for LV
+                triplets.append((en_vals[en_i], de_vals[de_i], None))
 
         unmatched = {
             'en': [v for i, v in enumerate(en_vals) if i not in matched_en],

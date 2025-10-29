@@ -6,15 +6,25 @@ from pathlib import Path
 
 # Project paths
 PROJECT_ROOT = Path(__file__).parent
-DATA_DIR = PROJECT_ROOT / "data"
+DATA_DIR = PROJECT_ROOT / "datanew"
 OUTPUT_DIR = PROJECT_ROOT / "output"
 CACHE_DIR = PROJECT_ROOT / ".cache"
 
+'''
 # Input files
 INPUT_FILES = {
     "en": DATA_DIR / "test_sample_en_parsed.json",
     "de": DATA_DIR / "test_sample_de_parsed.json",
     "lv": DATA_DIR / "test_sample_lv_parsed.json"
+}
+'''
+
+# config.py
+#DATA_DIR = PROJECT_ROOT / "datanew"
+INPUT_FILES = {
+    "en": DATA_DIR / "eval_sample_en.json",
+    "de": DATA_DIR / "eval_sample_de.json",
+    "lv": DATA_DIR / "eval_sample_lv.json",
 }
 
 # Ground truth
@@ -68,10 +78,18 @@ ERROR_TYPES = {
 # Validation helper
 def validate_watson_credentials() -> bool:
     """Check if Watson AI credentials are properly configured."""
-    if not WATSON_API_KEY or WATSON_API_KEY.startswith("REPLACE_"):
+    # Check API key
+    if not WATSON_API_KEY or len(WATSON_API_KEY) < 20:
         return False
-    if not WATSON_PROJECT_ID or WATSON_PROJECT_ID.startswith("REPLACE_"):
+    if WATSON_API_KEY.startswith("REPLACE_") or WATSON_API_KEY == "your_key_here":
         return False
+
+    # Check Project ID (should be UUID format)
+    if not WATSON_PROJECT_ID or len(WATSON_PROJECT_ID) < 30:
+        return False
+    if WATSON_PROJECT_ID.startswith("REPLACE_") or WATSON_PROJECT_ID == "your_project_id":
+        return False
+
     return True
 
 def require_watson_credentials():

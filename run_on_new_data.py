@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """
-Document Consistency Checker - IBM Hackathon Project
-Main entry point for the application.
+Run the document consistency checker on the NEW evaluation dataset.
 """
 import argparse
 from pathlib import Path
 
-from config import INPUT_FILES, OUTPUT_DIR
 from src.loaders.json_loader import JSONLoader
 from src.alignment.simple_aligner import SimpleAligner
 from src.alignment.paragraph_aligner import ParagraphAligner
@@ -15,23 +13,27 @@ from src.validators.consistency_checker import ConsistencyChecker
 from src.output.report_generator import ReportGenerator
 
 
-def main(output_format: str = "both", use_semantic: bool = False, use_watson: bool = None, watson_validation: bool = False):
-    """
-    Main execution flow.
+# New dataset files
+INPUT_FILES_NEW = {
+    "en": Path("datanew/eval_sample_en.json"),
+    "de": Path("datanew/eval_sample_de.json"),
+    "lv": Path("datanew/eval_sample_lv.json")
+}
 
-    Args:
-        output_format: Output format ('json', 'excel', or 'both')
-        use_semantic: Use semantic embedding-based alignment instead of simple index-based
-        use_watson: Use Watson AI embeddings (None = auto-detect, True = force Watson, False = force local)
-        watson_validation: Use Watson AI to validate and explain detected errors (reduces false positives)
+OUTPUT_DIR = Path("output")
+
+
+def main(output_format: str = "both", use_semantic: bool = False, use_watson: bool = None):
+    """
+    Main execution flow for NEW evaluation dataset.
     """
     print("=" * 70)
-    print("Document Consistency Checker")
+    print("Document Consistency Checker - NEW EVALUATION DATASET")
     print("=" * 70)
 
     # Step 1: Load documents
-    print("\n[1/4] Loading documents...")
-    documents = JSONLoader.load_all(INPUT_FILES)
+    print("\n[1/4] Loading NEW evaluation documents...")
+    documents = JSONLoader.load_all(INPUT_FILES_NEW)
     for lang, doc in documents.items():
         print(f"  ✓ {lang.upper()}: {len(doc)} paragraphs")
 
@@ -50,34 +52,36 @@ def main(output_format: str = "both", use_semantic: bool = False, use_watson: bo
 
     # Step 3: Check consistency
     print("\n[3/4] Checking for inconsistencies...")
-    if watson_validation:
-        print("  → Using Watson AI validation to filter false positives")
-    checker = ConsistencyChecker(use_watson_validation=watson_validation)
+    checker = ConsistencyChecker()
     differences = checker.check_all(aligned)
     print(f"  ✓ Found {len(differences)} differences")
 
-    # Step 4: Generate reports
+    # Step 4: Generate reports with _eval suffix
     print("\n[4/4] Generating reports...")
     report_gen = ReportGenerator()
 
     if output_format in ['json', 'both']:
-        report_gen.generate_json(differences)
+        output_path = OUTPUT_DIR / "differences_eval.json"
+        report_gen.generate_json(differences, output_path=output_path)
 
     if output_format in ['excel', 'both']:
-        report_gen.generate_excel(differences)
+        output_path = OUTPUT_DIR / "differences_eval.xlsx"
+        report_gen.generate_excel(differences, output_path=output_path)
 
     # Print summary
     print("\n" + report_gen.generate_summary(differences))
 
     print("\n" + "=" * 70)
     print("✓ Processing complete!")
-    print(f"  Output directory: {OUTPUT_DIR.absolute()}")
+    print(f"  Output files:")
+    print(f"    - output/differences_eval.json")
+    print(f"    - output/differences_eval.xlsx")
     print("=" * 70)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Check consistency across multilingual legal documents"
+        description="Check consistency on NEW evaluation dataset"
     )
     parser.add_argument(
         "--format",
@@ -88,22 +92,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "--semantic",
         action='store_true',
-        help="Use semantic embedding-based alignment instead of simple index-based"
+        help="Use semantic embedding-based alignment"
     )
     parser.add_argument(
         "--watson",
         action='store_true',
-        help="Force use of Watson AI embeddings (requires credentials)"
+        help="Force use of Watson AI embeddings"
     )
     parser.add_argument(
         "--local",
         action='store_true',
         help="Force use of local embeddings model"
-    )
-    parser.add_argument(
-        "--watson-validate",
-        action='store_true',
-        help="Use Watson AI to validate errors and add AI explanations (requires Watson credentials)"
     )
 
     args = parser.parse_args()
@@ -118,6 +117,5 @@ if __name__ == "__main__":
     main(
         output_format=args.format,
         use_semantic=args.semantic,
-        use_watson=use_watson,
-        watson_validation=args.watson_validate
+        use_watson=use_watson
     )

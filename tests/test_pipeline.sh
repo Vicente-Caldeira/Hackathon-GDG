@@ -66,10 +66,30 @@ echo -n "  Testing entity extractor... "
 if python3 -c "
 from src.extractors.entity_extractor import EntityExtractor
 extractor = EntityExtractor()
+EntityExtractor._embedding_generator_failed = True
 text = 'The facility is supported with EUR 520 million on 16/06/2023.'
 entities = extractor.extract_all(text)
 assert len(entities['monetary']) > 0, 'Should extract monetary value'
 assert len(entities['dates']) > 0, 'Should extract date'
+formats = [
+    ('EUR 1,234.56 grant', 1234.56),
+    ('Budget: 1.234,56 EUR', 1234.56),
+]
+for sample, expected in formats:
+    values = EntityExtractor.extract_monetary_values(sample)
+    assert values, f'Monetary value missing for {sample}'
+    assert abs(values[0].amount - expected) < 1e-6, f'Incorrect amount for {sample}: {values[0].amount}'
+legal_samples = [
+    ('Article 6(2)', {'article': {'6'}, 'paragraph': {'2'}}),
+    ('Artikel 6 Absatz 2', {'article': {'6'}, 'paragraph': {'2'}}),
+    ('6. panta 2. punkta', {'article': {'6'}, 'paragraph': {'2'}}),
+]
+for sample, expected in legal_samples:
+    refs = EntityExtractor.extract_legal_references(sample)
+    article_refs = {r.reference for r in refs if r.type == 'article'}
+    paragraph_refs = {r.reference for r in refs if r.type == 'paragraph'}
+    assert expected['article'].issubset(article_refs), f'Missing article ref in \"{sample}\"'
+    assert expected['paragraph'].issubset(paragraph_refs), f'Missing paragraph ref in \"{sample}\"'
 print(f'Extracted: {len(entities[\"monetary\"])} monetary, {len(entities[\"dates\"])} dates')
 " 2>&1; then
     echo -e "${GREEN}✓${NC}"
