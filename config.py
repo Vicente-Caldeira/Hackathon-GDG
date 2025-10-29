@@ -20,10 +20,14 @@ INPUT_FILES = {
 # Ground truth
 GROUND_TRUTH_FILE = DATA_DIR / "errors_test_file.xlsx"
 
-# Watson AI configuration (set via environment variables)
-WATSON_API_KEY = os.getenv("WATSON_API_KEY", "ZOkaD98Yl9AaDMgQUwLbVCgmu50InnoHMeXWMVn6avrh")
+# Watson AI configuration (MUST be set via environment variables)
+# ⚠️ SECURITY: Never commit real API keys to version control!
+# Set these before running with Watson AI:
+#   export WATSON_API_KEY="your_key_here"
+#   export WATSON_PROJECT_ID="your_project_id"
+WATSON_API_KEY = os.getenv("WATSON_API_KEY", "")
 WATSON_URL = os.getenv("WATSON_URL", "https://us-south.ml.cloud.ibm.com")
-WATSON_PROJECT_ID = os.getenv("WATSON_PROJECT_ID", "d9206445-c488-4f02-9441-aee55859d443")
+WATSON_PROJECT_ID = os.getenv("WATSON_PROJECT_ID", "")
 
 # Embedding models
 # BEST for multilingual (EN, DE, LV): IBM Granite Multilingual
@@ -58,6 +62,25 @@ ERROR_TYPES = {
     "CASE_NUMBER": SEVERITY_MEDIUM,
     "TYPO": SEVERITY_LOW
 }
+
+# Validation helper
+def validate_watson_credentials() -> bool:
+    """Check if Watson AI credentials are properly configured."""
+    if not WATSON_API_KEY or WATSON_API_KEY.startswith("REPLACE_"):
+        return False
+    if not WATSON_PROJECT_ID or WATSON_PROJECT_ID.startswith("REPLACE_"):
+        return False
+    return True
+
+def require_watson_credentials():
+    """Raise error if Watson credentials are missing."""
+    if not validate_watson_credentials():
+        raise ValueError(
+            "Watson AI credentials not configured!\n"
+            "Set environment variables:\n"
+            "  export WATSON_API_KEY='your_api_key'\n"
+            "  export WATSON_PROJECT_ID='your_project_id'"
+        )
 
 # Create directories if they don't exist
 OUTPUT_DIR.mkdir(exist_ok=True)

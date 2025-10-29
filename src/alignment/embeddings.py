@@ -6,7 +6,11 @@ import json
 import numpy as np
 from pathlib import Path
 from typing import List, Optional, Dict
-from config import WATSON_API_KEY, WATSON_URL, WATSON_PROJECT_ID, CACHE_DIR, EMBEDDING_MODEL
+from config import (
+    WATSON_API_KEY, WATSON_URL, WATSON_PROJECT_ID,
+    WATSON_EMBEDDING_MODEL, CACHE_DIR, EMBEDDING_MODEL,
+    validate_watson_credentials
+)
 
 
 class EmbeddingGenerator:
@@ -34,6 +38,13 @@ class EmbeddingGenerator:
     def _init_watson(self):
         """Initialize Watson AI embeddings."""
         try:
+            # Validate credentials first
+            if not validate_watson_credentials():
+                print("⚠ Watson AI credentials not configured")
+                print("→ Falling back to local model")
+                self._init_local()
+                return
+
             from ibm_watsonx_ai import Credentials
             from ibm_watsonx_ai.foundation_models import Embeddings
 
@@ -43,11 +54,11 @@ class EmbeddingGenerator:
             )
 
             self.model = Embeddings(
-                model_id="ibm/slate-125m-english-rtrvr",
+                model_id=WATSON_EMBEDDING_MODEL,  # Use configured model
                 credentials=credentials,
                 project_id=WATSON_PROJECT_ID
             )
-            print("✓ Using Watson AI embeddings")
+            print(f"✓ Using Watson AI embeddings: {WATSON_EMBEDDING_MODEL}")
         except Exception as e:
             print(f"⚠ Watson AI initialization failed: {e}")
             print("→ Falling back to local model")
