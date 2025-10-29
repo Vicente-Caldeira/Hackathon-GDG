@@ -9,16 +9,20 @@ from pathlib import Path
 from config import INPUT_FILES, OUTPUT_DIR
 from src.loaders.json_loader import JSONLoader
 from src.alignment.simple_aligner import SimpleAligner
+from src.alignment.paragraph_aligner import ParagraphAligner
+from src.alignment.embeddings import EmbeddingGenerator
 from src.validators.consistency_checker import ConsistencyChecker
 from src.output.report_generator import ReportGenerator
 
 
-def main(output_format: str = "both"):
+def main(output_format: str = "both", use_semantic: bool = False, use_watson: bool = None):
     """
     Main execution flow.
 
     Args:
         output_format: Output format ('json', 'excel', or 'both')
+        use_semantic: Use semantic embedding-based alignment instead of simple index-based
+        use_watson: Use Watson AI embeddings (None = auto-detect, True = force Watson, False = force local)
     """
     print("=" * 70)
     print("Document Consistency Checker")
@@ -30,10 +34,17 @@ def main(output_format: str = "both"):
     for lang, doc in documents.items():
         print(f"  ✓ {lang.upper()}: {len(doc)} paragraphs")
 
-    # Step 2: Align paragraphs (simple index-based alignment)
+    # Step 2: Align paragraphs
     print("\n[2/4] Aligning paragraphs across languages...")
-    aligner = SimpleAligner()
-    aligned = aligner.align_documents(documents)
+    if use_semantic:
+        print("  → Using semantic embedding-based alignment")
+        embedding_gen = EmbeddingGenerator(use_watson=use_watson)
+        aligner = ParagraphAligner(embedding_gen)
+        aligned = aligner.align_documents(documents, use_cache=True)
+    else:
+        print("  → Using simple index-based alignment")
+        aligner = SimpleAligner()
+        aligned = aligner.align_documents(documents)
     print(f"  ✓ Aligned {len(aligned)} paragraph groups")
 
     # Step 3: Check consistency
@@ -71,7 +82,29 @@ if __name__ == "__main__":
         default='both',
         help="Output format (default: both)"
     )
+    parser.add_argument(
+        "--semantic",
+        action='store_true',
+        help="Use semantic embedding-based alignment instead of simple index-based"
+    )
+    parser.add_argument(
+        "--watson",
+        action='store_true',
+        help="Force use of Watson AI embeddings (requires credentials)"
+    )
+    parser.add_argument(
+        "--local",
+        action='store_true',
+        help="Force use of local embeddings model"
+    )
 
     args = parser.parse_args()
 
-    main(output_format=args.format)
+    # Determine watson flag
+    use_watson = None
+    if args.watson:
+        use_watson = True
+    elif args.local:
+        use_watson = False
+
+    main(output_format=args.format, use_semantic=args.semantic, use_watson=use_watson)

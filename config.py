@@ -41,7 +41,9 @@ WATSON_EMBEDDING_MODEL = "ibm/granite-embedding-107m-multilingual"
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 # Detection thresholds
-SIMILARITY_THRESHOLD = 0.85  # For paragraph alignment
+# Note: Granite multilingual model averages 0.83 cross-lingual similarity in testing
+# Setting threshold to 0.75 to avoid false "missing" matches
+SIMILARITY_THRESHOLD = 0.75  # For paragraph alignment
 NUMERICAL_TOLERANCE = 0.01   # For comparing decimal values
 
 # Severity levels

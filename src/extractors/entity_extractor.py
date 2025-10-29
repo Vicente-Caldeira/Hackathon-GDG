@@ -55,31 +55,47 @@ class EntityExtractor:
         r'([0-9]{1,3}(?:[,.\s][0-9]{3})*(?:[,.][0-9]+)?)\s*(million|billion|trillion|Mio\.|Mrd\.|miljonu|miljardi)?\s*(EUR|USD|GBP|€|\$)',
     ]
 
-    # Legal reference patterns
+    # Legal reference patterns (multilingual)
     LEGAL_PATTERNS = {
-        'regulation': r'\(EU,?\s*Euratom?\)\s*(?:No\.?|Nr\.?)?\s*([0-9]+/[0-9]+)',
+        'regulation': r'\(EU,?\s*Euratom?\)\s*(?:No\.?|Nr\.?|regulas\s*Nr\.?)?\s*([0-9]+/[0-9]+)',
         'regulation_short': r'\(E[USR],?\s*Euratom?\)\s*([0-9]+/[0-9]+)',
-        'article': r'Art(?:icle|\.)\s*([0-9]+(?:\([0-9]+\))?(?:\s*[a-z])?)',
-        'paragraph': r'Paragraph\s*([0-9]+)',
+        # English: Article, German: Artikel, Latvian: pants
+        'article': r'(?:Art(?:icle|ikel)?|pants)\.?\s*([0-9]+(?:\([0-9]+\))?(?:\s*[a-z])?)',
+        # English: Paragraph, German: Absatz, Latvian: rindkopa
+        'paragraph': r'(?:Paragraph|Absatz|rindkopa)\s*([0-9]+)',
         'case': r'([CT][-‑][0-9]+/[0-9]+\s*P?)',
         'ecli': r'(E[CU]LI?:[A-Z]+:[0-9]{4}:[0-9]+)',
     }
 
-    # Date patterns
+    # Date patterns (multilingual)
     DATE_PATTERNS = [
         r'\d{1,2}[./\-]\d{1,2}[./\-]\d{2,4}',  # 16/06/2023, 2023-06-16
         r'\d{4}[-‑]\d{2}[-‑]\d{2}',             # 2023-06-16
+        # English months
         r'\d{1,2}\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}',
+        # German months
         r'\d{1,2}\.\s*(?:Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s+\d{4}',
+        # Latvian months
+        r'\d{1,2}\.\s*(?:janvāris|februāris|marts|aprīlis|maijs|jūnijs|jūlijs|augusts|septembris|oktobris|novembris|decembris)\s+\d{4}',
     ]
 
-    # Vague date patterns (to detect missing specific values)
+    # Vague date patterns (multilingual - to detect missing specific values)
     VAGUE_DATE_PATTERNS = [
+        # English
         r'in\s+\d+\s+(?:days?|weeks?|months?|years?)',
         r'within\s+\d+\s+(?:days?|weeks?|months?)',
         r'soon',
         r'shortly',
         r'in\s+the\s+near\s+future',
+        # German
+        r'in\s+\d+\s+(?:Tagen?|Wochen?|Monaten?|Jahren?)',
+        r'innerhalb\s+(?:von\s+)?\d+\s+(?:Tagen?|Wochen?|Monaten?)',
+        r'bald',
+        r'demnächst',
+        # Latvian
+        r'\d+\s+(?:dienas?|nedēļas?|mēnešos?|gados?)',
+        r'drīzumā',
+        r'tuvākajā\s+laikā',
     ]
 
     @classmethod

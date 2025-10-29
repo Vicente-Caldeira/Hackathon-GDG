@@ -5,6 +5,7 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from sklearn.metrics.pairwise import cosine_similarity
+from scipy.optimize import linear_sum_assignment
 
 from src.loaders.json_loader import Document, Paragraph
 from src.alignment.embeddings import EmbeddingGenerator
@@ -63,42 +64,65 @@ class ParagraphAligner:
         Returns:
             List of AlignedParagraphs objects
         """
-        # Generate or load embeddings
-        embeddings = self._get_embeddings(documents, use_cache)
+        # Generate or load embeddings (with index mappings)
+        embeddings, index_mappings = self._get_embeddings(documents, use_cache)
 
         # Align using English as the reference
-        return self._align_with_reference(documents, embeddings, 'en')
+        return self._align_with_reference(documents, embeddings, index_mappings, 'en')
 
     def _get_embeddings(
         self,
         documents: Dict[str, Document],
         use_cache: bool
-    ) -> Dict[str, np.ndarray]:
-        """Generate or load embeddings for all documents."""
-        cache_name = "document_set"
+    ) -> Tuple[Dict[str, np.ndarray], Dict[str, List[int]]]:
+        """Generate or load embeddings for all documents.
 
+        Returns:
+            Tuple of (embeddings, index_mappings) where index_mappings tracks
+            which original paragraph indices were embedded.
+        """
+        # Generate content-based cache key
+        cache_name = self.embedding_generator.get_cache_key(documents)
+
+        # Try loading from cache
         if use_cache:
-            cached = self.embedding_generator.load_cache(cache_name)
-            if cached is not None:
-                return cached
+            cached_emb = self.embedding_generator.load_cache(cache_name)
+            cached_map = self.embedding_generator.load_mappings(cache_name)
+
+            if cached_emb is not None and cached_map is not None:
+                print(f"✓ Loaded embeddings from cache: {cache_name}")
+                return cached_emb, cached_map
 
         # Generate embeddings for each language
         embeddings = {}
+        index_mappings = {}
+
         for lang, doc in documents.items():
-            texts = [p.text for p in doc.paragraphs if p.text.strip()]
-            print(f"Generating embeddings for {lang.upper()}... ({len(texts)} paragraphs)")
-            embeddings[lang] = self.embedding_generator.generate(texts)
+            # Track which paragraphs are non-empty
+            non_empty_texts = []
+            mapping = []
+
+            for i, p in enumerate(doc.paragraphs):
+                if p.text.strip():
+                    non_empty_texts.append(p.text)
+                    mapping.append(i)  # Store original index
+
+            print(f"  Generating embeddings for {lang.upper()}... ({len(non_empty_texts)} non-empty paragraphs)")
+            embeddings[lang] = self.embedding_generator.generate(non_empty_texts)
+            index_mappings[lang] = mapping
 
         # Cache for future use
         if use_cache:
             self.embedding_generator.save_cache(embeddings, cache_name)
+            self.embedding_generator.save_mappings(index_mappings, cache_name)
 
-        return embeddings
+        return embeddings, index_mappings
 
     def _align_with_reference(
         self,
         documents: Dict[str, Document],
         embeddings: Dict[str, np.ndarray],
+        index_mappings: Dict[str, List[int]],
         reference_lang: str = 'en'
     ) -> List[AlignedParagraphs]:
         """
@@ -107,6 +131,7 @@ class ParagraphAligner:
         Args:
             documents: Dictionary of documents
             embeddings: Dictionary of embeddings
+            index_mappings: Mapping from embedding index to original paragraph index
             reference_lang: Language to use as reference (default: 'en')
 
         Returns:
@@ -114,37 +139,59 @@ class ParagraphAligner:
         """
         ref_doc = documents[reference_lang]
         ref_embeddings = embeddings[reference_lang]
+        ref_mapping = index_mappings[reference_lang]
 
         aligned = []
 
-        # Track which paragraphs in other languages have been matched
-        matched_indices = {lang: set() for lang in documents.keys() if lang != reference_lang}
+        # Use global Hungarian assignment for optimal matching
+        other_langs = [lang for lang in documents.keys() if lang != reference_lang]
 
-        for i, ref_para in enumerate(ref_doc.paragraphs):
-            if not ref_para.text.strip():
-                continue
+        # Build global matching using Hungarian algorithm for each language pair
+        matched_indices = {lang: {} for lang in other_langs}  # Maps emb_idx -> ref_emb_idx
+
+        for lang in other_langs:
+            # Compute full cost matrix
+            cost_matrix = self._compute_cost_matrix(
+                ref_embeddings,
+                embeddings[lang]
+            )
+
+            # Apply Hungarian algorithm
+            ref_indices, lang_indices = linear_sum_assignment(cost_matrix)
+
+            # Store matches that meet threshold
+            for ref_i, lang_i in zip(ref_indices, lang_indices):
+                similarity = 1.0 - cost_matrix[ref_i, lang_i]  # Convert cost back to similarity
+                if similarity >= SIMILARITY_THRESHOLD:
+                    matched_indices[lang][lang_i] = (ref_i, similarity)
+
+        # Build aligned paragraphs from global matches
+        processed_ref_indices = set()
+
+        for ref_emb_idx in range(len(ref_embeddings)):
+            orig_idx = ref_mapping[ref_emb_idx]
+            ref_para = ref_doc.paragraphs[orig_idx]
 
             alignment = {reference_lang: ref_para}
             scores = {}
 
-            # Find best match in each other language
-            for lang in documents.keys():
-                if lang == reference_lang:
-                    continue
+            # Find matches for this reference paragraph
+            for lang in other_langs:
+                # Find if any language paragraph matched this ref paragraph
+                lang_match = None
+                for lang_emb_idx, (matched_ref_idx, sim) in matched_indices[lang].items():
+                    if matched_ref_idx == ref_emb_idx:
+                        lang_match = (lang_emb_idx, sim)
+                        break
 
-                best_idx, best_score = self._find_best_match(
-                    ref_embeddings[i:i+1],
-                    embeddings[lang],
-                    matched_indices[lang]
-                )
-
-                if best_score >= SIMILARITY_THRESHOLD:
-                    alignment[lang] = documents[lang].paragraphs[best_idx]
-                    matched_indices[lang].add(best_idx)
-                    scores[f"{reference_lang}-{lang}"] = best_score
+                if lang_match:
+                    lang_emb_idx, similarity = lang_match
+                    orig_para_idx = index_mappings[lang][lang_emb_idx]
+                    alignment[lang] = documents[lang].paragraphs[orig_para_idx]
+                    scores[f"{reference_lang}-{lang}"] = similarity
                 else:
                     alignment[lang] = None
-                    scores[f"{reference_lang}-{lang}"] = best_score
+                    scores[f"{reference_lang}-{lang}"] = 0.0
 
             aligned.append(AlignedParagraphs(
                 en=alignment.get('en'),
@@ -153,7 +200,63 @@ class ParagraphAligner:
                 similarity_scores=scores
             ))
 
+            processed_ref_indices.add(ref_emb_idx)
+
+        # CRITICAL: Add unmatched paragraphs from non-reference languages
+        # This ensures we detect DE/LV-only content that has no EN equivalent
+        for lang in other_langs:
+            # Find unmatched embeddings
+            matched_lang_indices = set(matched_indices[lang].keys())
+
+            for emb_idx in range(len(embeddings[lang])):
+                if emb_idx not in matched_lang_indices:
+                    # This paragraph exists in non-reference language but has no match
+                    orig_para_idx = index_mappings[lang][emb_idx]
+
+                    # Create alignment with only this language
+                    alignment = {
+                        'en': None,
+                        'de': None,
+                        'lv': None
+                    }
+                    alignment[lang] = documents[lang].paragraphs[orig_para_idx]
+
+                    aligned.append(AlignedParagraphs(
+                        en=alignment.get('en'),
+                        de=alignment.get('de'),
+                        lv=alignment.get('lv'),
+                        similarity_scores={}
+                    ))
+
         return aligned
+
+    def _compute_cost_matrix(
+        self,
+        ref_embeddings: np.ndarray,
+        target_embeddings: np.ndarray
+    ) -> np.ndarray:
+        """
+        Compute cost matrix for Hungarian algorithm.
+
+        Args:
+            ref_embeddings: Reference embeddings (n, dim)
+            target_embeddings: Target embeddings (m, dim)
+
+        Returns:
+            Cost matrix (n, m) where cost = 1 - similarity
+        """
+        # Safety check
+        if len(ref_embeddings) == 0 or len(target_embeddings) == 0:
+            return np.array([[]])
+
+        # Compute cosine similarities
+        from sklearn.metrics.pairwise import cosine_similarity
+        similarities = cosine_similarity(ref_embeddings, target_embeddings)
+
+        # Convert to cost (lower is better for Hungarian)
+        cost_matrix = 1.0 - similarities
+
+        return cost_matrix
 
     def _find_best_match(
         self,
@@ -172,6 +275,15 @@ class ParagraphAligner:
         Returns:
             Tuple of (best_index, best_score)
         """
+        # Safety check: empty candidate array
+        if len(candidate_embeddings) == 0:
+            return 0, 0.0
+
+        # Safety check: all candidates excluded
+        available_count = len(candidate_embeddings) - len(exclude_indices)
+        if available_count <= 0:
+            return 0, 0.0
+
         similarities = cosine_similarity(query_embedding, candidate_embeddings)[0]
 
         # Mask out excluded indices
