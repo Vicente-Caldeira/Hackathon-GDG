@@ -1,0 +1,864 @@
+{
+  "metadata": {
+    "documents": [
+      "test_sample_en",
+      "test_sample_de",
+      "test_sample_lv"
+    ],
+    "total_differences": 50,
+    "timestamp": "2025-10-29T12:27:05.570996",
+    "version": "1.0"
+  },
+  "differences": [
+    {
+      "id": 1,
+      "paragraph_ids": {
+        "en": 5,
+        "de": 5,
+        "lv": 5
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 212 t",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 2,
+      "paragraph_ids": {
+        "en": 9,
+        "de": 9,
+        "lv": 9
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 2 o",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 3,
+      "paragraph_ids": {
+        "en": 12,
+        "de": 12,
+        "lv": 12
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 32 o",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 4,
+      "paragraph_ids": {
+        "en": 13,
+        "de": 13,
+        "lv": 13
+      },
+      "error_type": "CURRENCY_MISMATCH",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "135.0 EUR",
+        "de": "1.5 USD",
+        "lv": "135.0 EUR"
+      },
+      "description": "Currency mismatch: {'USD', 'EUR'}",
+      "confidence": 1.0
+    },
+    {
+      "id": 5,
+      "paragraph_ids": {
+        "en": 13,
+        "de": 13,
+        "lv": 13
+      },
+      "error_type": "SCALE_ERROR",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "135.0 million",
+        "de": "1.5 billion",
+        "lv": "135.0 million"
+      },
+      "description": "Scale mismatch: {'million', 'billion'}",
+      "confidence": 1.0
+    },
+    {
+      "id": 6,
+      "paragraph_ids": {
+        "en": 13,
+        "de": 13,
+        "lv": 13
+      },
+      "error_type": "MONETARY_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "EUR 135 million",
+        "de": "1,5 Mrd. USD",
+        "lv": "135 miljonu EUR"
+      },
+      "description": "Monetary amounts differ: EN=135000000.0, DE=1500000000.0, LV=135000000.0",
+      "confidence": 0.99
+    },
+    {
+      "id": 7,
+      "paragraph_ids": {
+        "en": 13,
+        "de": 13,
+        "lv": 13
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "MISSING",
+        "de": "136 Mio. EUR",
+        "lv": "MISSING"
+      },
+      "description": "Monetary value present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 8,
+      "paragraph_ids": {
+        "en": 13,
+        "de": 13,
+        "lv": 13
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 18(2) o",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 9,
+      "paragraph_ids": {
+        "en": 13,
+        "de": 13,
+        "lv": 13
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 6(2)",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 10,
+      "paragraph_ids": {
+        "en": 14,
+        "de": 14,
+        "lv": 14
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 19(3) f",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 11,
+      "paragraph_ids": {
+        "en": 15,
+        "de": 15,
+        "lv": 15
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 31(4) o",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 12,
+      "paragraph_ids": {
+        "en": 16,
+        "de": 16,
+        "lv": 16
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "(EU, Eurato) 2024/2509",
+        "de": "(EU, Euratom) 2024/2509",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 13,
+      "paragraph_ids": {
+        "en": 16,
+        "de": 16,
+        "lv": 16
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 322 o",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 14,
+      "paragraph_ids": {
+        "en": 17,
+        "de": 17,
+        "lv": 17
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 19(2)",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 15,
+      "paragraph_ids": {
+        "en": 19,
+        "de": 19,
+        "lv": 19
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 6(2)",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 16,
+      "paragraph_ids": {
+        "en": 20,
+        "de": 20,
+        "lv": 20
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 214 o",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 17,
+      "paragraph_ids": {
+        "en": 20,
+        "de": 20,
+        "lv": 20
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 6(2)",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 18,
+      "paragraph_ids": {
+        "en": 21,
+        "de": 21,
+        "lv": 21
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 31(5)",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 19,
+      "paragraph_ids": {
+        "en": 23,
+        "de": 23,
+        "lv": 23
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "(EU, Euratom) No 883/2013",
+        "de": "(EU, Euratom) Nr. 883/2013",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 20,
+      "paragraph_ids": {
+        "en": 24,
+        "de": 24,
+        "lv": 24
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "(EU, Euratom) No 883/2013",
+        "de": "(EU, Euratom) Nr. 883/2013",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 21,
+      "paragraph_ids": {
+        "en": 25,
+        "de": 25,
+        "lv": 25
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 129 o",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 22,
+      "paragraph_ids": {
+        "en": 27,
+        "de": 27,
+        "lv": 27
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 6\nI",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 23,
+      "paragraph_ids": {
+        "en": 28,
+        "de": 28,
+        "lv": 28
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "MISSING",
+        "de": "1,5 Mrd. EUR",
+        "lv": "MISSING"
+      },
+      "description": "Monetary value present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 24,
+      "paragraph_ids": {
+        "en": 28,
+        "de": 28,
+        "lv": 28
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 31(4) o",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 25,
+      "paragraph_ids": {
+        "en": 29,
+        "de": 29,
+        "lv": 29
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 6(2)",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 26,
+      "paragraph_ids": {
+        "en": 29,
+        "de": 29,
+        "lv": 29
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 18(2) a",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 27,
+      "paragraph_ids": {
+        "en": 30,
+        "de": 30,
+        "lv": 30
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 19(3) f",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 28,
+      "paragraph_ids": {
+        "en": 31,
+        "de": 31,
+        "lv": 31
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "paragraph 2",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 29,
+      "paragraph_ids": {
+        "en": 31,
+        "de": 31,
+        "lv": 31
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "paragraph 6",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 30,
+      "paragraph_ids": {
+        "en": 32,
+        "de": 32,
+        "lv": 32
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 32 o",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 31,
+      "paragraph_ids": {
+        "en": 32,
+        "de": 32,
+        "lv": 32
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 19 o",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 32,
+      "paragraph_ids": {
+        "en": 33,
+        "de": 33,
+        "lv": 33
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "paragraph 2",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 33,
+      "paragraph_ids": {
+        "en": 34,
+        "de": 34,
+        "lv": 34
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 30\nE",
+        "de": "MISSING",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 34,
+      "paragraph_ids": {
+        "en": 39,
+        "de": 39,
+        "lv": 39
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 272 T",
+        "de": "Art. 272 A",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 35,
+      "paragraph_ids": {
+        "en": 41,
+        "de": 41,
+        "lv": 41
+      },
+      "error_type": "MONETARY_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "EUR 779 902.87",
+        "de": "902,87 Eur",
+        "lv": "902,87 EUR"
+      },
+      "description": "Monetary amounts differ: EN=779902.87, DE=902.87, LV=902.87",
+      "confidence": 0.99
+    },
+    {
+      "id": 36,
+      "paragraph_ids": {
+        "en": 42,
+        "de": 42,
+        "lv": 42
+      },
+      "error_type": "MONETARY_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "EUR 389 951.44",
+        "de": "952,44 Eur",
+        "lv": "951,44 EUR"
+      },
+      "description": "Monetary amounts differ: EN=389951.44, DE=952.44, LV=951.44",
+      "confidence": 0.99
+    },
+    {
+      "id": 37,
+      "paragraph_ids": {
+        "en": 43,
+        "de": 43,
+        "lv": 43
+      },
+      "error_type": "MONETARY_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "EUR 155 980.57",
+        "de": "980,57 Eur",
+        "lv": "980,57 EUR"
+      },
+      "description": "Monetary amounts differ: EN=155980.57, DE=980.57, LV=980.57",
+      "confidence": 0.99
+    },
+    {
+      "id": 38,
+      "paragraph_ids": {
+        "en": 44,
+        "de": 44,
+        "lv": 44
+      },
+      "error_type": "MONETARY_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "EUR 155 980.57",
+        "de": "980,57 Eur",
+        "lv": "980,57 EUR"
+      },
+      "description": "Monetary amounts differ: EN=155980.57, DE=980.57, LV=980.57",
+      "confidence": 0.99
+    },
+    {
+      "id": 39,
+      "paragraph_ids": {
+        "en": 45,
+        "de": 45,
+        "lv": 45
+      },
+      "error_type": "MONETARY_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "EUR 77 990.29",
+        "de": "990,29 Eur",
+        "lv": "990,39 EUR"
+      },
+      "description": "Monetary amounts differ: EN=77990.29, DE=990.29, LV=990.39",
+      "confidence": 0.99
+    },
+    {
+      "id": 40,
+      "paragraph_ids": {
+        "en": 47,
+        "de": 47,
+        "lv": 47
+      },
+      "error_type": "MONETARY_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "EUR 779 902.97",
+        "de": "902,87 Eur",
+        "lv": "902,87 EUR"
+      },
+      "description": "Monetary amounts differ: EN=779902.97, DE=902.87, LV=902.87",
+      "confidence": 0.99
+    },
+    {
+      "id": 41,
+      "paragraph_ids": {
+        "en": 48,
+        "de": 48,
+        "lv": 48
+      },
+      "error_type": "MONETARY_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "EUR 16 636",
+        "de": "636,00 Eur",
+        "lv": "636 EUR"
+      },
+      "description": "Monetary amounts differ: EN=16636.0, DE=636.0, LV=636.0",
+      "confidence": 0.99
+    },
+    {
+      "id": 42,
+      "paragraph_ids": {
+        "en": 49,
+        "de": 49,
+        "lv": 49
+      },
+      "error_type": "MONETARY_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "EUR 8 318",
+        "de": "318 Eur",
+        "lv": "318 EUR"
+      },
+      "description": "Monetary amounts differ: EN=8318.0, DE=318.0, LV=318.0",
+      "confidence": 0.99
+    },
+    {
+      "id": 43,
+      "paragraph_ids": {
+        "en": 50,
+        "de": 50,
+        "lv": 50
+      },
+      "error_type": "MONETARY_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "EUR 3 327.20",
+        "de": "327,20 Eur",
+        "lv": "327,20 EUR"
+      },
+      "description": "Monetary amounts differ: EN=3327.2, DE=327.2, LV=327.2",
+      "confidence": 0.99
+    },
+    {
+      "id": 44,
+      "paragraph_ids": {
+        "en": 51,
+        "de": 51,
+        "lv": 51
+      },
+      "error_type": "MONETARY_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "EUR 3 327.20",
+        "de": "327,20 Eur",
+        "lv": "327,20 EUR"
+      },
+      "description": "Monetary amounts differ: EN=3327.2, DE=327.2, LV=327.2",
+      "confidence": 0.99
+    },
+    {
+      "id": 45,
+      "paragraph_ids": {
+        "en": 52,
+        "de": 52,
+        "lv": 52
+      },
+      "error_type": "MONETARY_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "EUR 1 663.60",
+        "de": "663,60 Eur",
+        "lv": "663,60 EUR"
+      },
+      "description": "Monetary amounts differ: EN=1663.6, DE=663.6, LV=663.6",
+      "confidence": 0.99
+    },
+    {
+      "id": 46,
+      "paragraph_ids": {
+        "en": 57,
+        "de": 57,
+        "lv": 57
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 56 o",
+        "de": "Art. 56 d",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 47,
+      "paragraph_ids": {
+        "en": 57,
+        "de": 57,
+        "lv": 57
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "Article 163 o",
+        "de": "Art. 163 d",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 48,
+      "paragraph_ids": {
+        "en": 57,
+        "de": 57,
+        "lv": 57
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "MISSING",
+        "de": "ECLI:C:2024:52",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 49,
+      "paragraph_ids": {
+        "en": 64,
+        "de": 64,
+        "lv": 64
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "(EU, Euratom) 2024/2509",
+        "de": "(EU, Euratom) 2024/2509",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    },
+    {
+      "id": 50,
+      "paragraph_ids": {
+        "en": 67,
+        "de": 67,
+        "lv": 67
+      },
+      "error_type": "MISSING_VALUE",
+      "severity": "CRITICAL",
+      "values": {
+        "en": "(EU, Euratom) No 883/2013",
+        "de": "(EU, Euratom) Nr. 883/2013",
+        "lv": "MISSING"
+      },
+      "description": "Legal reference present in some languages but missing in others",
+      "confidence": 0.95
+    }
+  ]
+}
