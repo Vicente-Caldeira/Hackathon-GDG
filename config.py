@@ -21,7 +21,7 @@ INPUT_FILES = {
 GROUND_TRUTH_FILE = DATA_DIR / "errors_test_file.xlsx"
 
 # Watson AI configuration (set via environment variables)
-WATSON_API_KEY = os.getenv("WATSON_API_KEY", "ApiKey-aaa31127-dba6-4c68-851f-84ee03d2e1e5")
+WATSON_API_KEY = os.getenv("WATSON_API_KEY", "ZOkaD98Yl9AaDMgQUwLbVCgmu50InnoHMeXWMVn6avrh")
 WATSON_URL = os.getenv("WATSON_URL", "https://us-south.ml.cloud.ibm.com")
 WATSON_PROJECT_ID = os.getenv("WATSON_PROJECT_ID", "d9206445-c488-4f02-9441-aee55859d443")
 
@@ -29,7 +29,7 @@ WATSON_PROJECT_ID = os.getenv("WATSON_PROJECT_ID", "d9206445-c488-4f02-9441-aee5
 # BEST for multilingual (EN, DE, LV): IBM Granite Multilingual
 WATSON_EMBEDDING_MODEL = "ibm/granite-embedding-107m-multilingual"
 
-# Alternative Watson models:
+# Alternative Watson models
 # - "ibm/slate-125m-english-rtrvr" (best for English-only, 768 dims)
 # - "ibm/slate-30m-english-rtrvr" (faster, smaller, 384 dims)
 

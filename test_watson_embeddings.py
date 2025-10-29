@@ -12,9 +12,9 @@ try:
     from config import WATSON_API_KEY, WATSON_URL, WATSON_PROJECT_ID
 except ImportError:
     # Fallback to environment variables
-    WATSON_API_KEY = os.getenv("WATSON_API_KEY", "")
+    WATSON_API_KEY = os.getenv("WATSON_API_KEY", "ZOkaD98Yl9AaDMgQUwLbVCgmu50InnoHMeXWMVn6avrh")
     WATSON_URL = os.getenv("WATSON_URL", "https://us-south.ml.cloud.ibm.com")
-    WATSON_PROJECT_ID = os.getenv("WATSON_PROJECT_ID", "")
+    WATSON_PROJECT_ID = os.getenv("WATSON_PROJECT_ID", "d9206445-c488-4f02-9441-aee55859d443")
 
 # Available Watson AI embedding models
 WATSON_MODELS = [
